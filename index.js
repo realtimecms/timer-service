@@ -14,7 +14,7 @@ let loadMoreAfter = Math.floor(queueDuration / 2)
 let timersQueue = []
 let timersById = new Map()
 let timersLoopStarted = false
-let timersLoopTimeout = 0
+let timersLoopTimeout = false
 let lastLoadTime = 0
 
 
@@ -115,6 +115,7 @@ function fireTimer(timer) {
 }
 
 async function timersLoop() {
+  timersLoopTimeout = false
   console.log("TL", timersQueue)
   if(timersQueue.length == 0) {
     timersLoopStarted = false
@@ -135,11 +136,18 @@ async function timersLoop() {
   let delay = nextTs - Date.now()
   if(delay > 1000) delay = 1000
   await maybeLoadMore()
-  setTimeout(timersLoop, delay)
+  if(timersLoopTimeout === false) {
+    timersLoopTimeout = setTimeout(timersLoop, delay)
+  }
 }
 
 function startTimersLoop() {
   timersLoopStarted = true
+  timersLoop()
+}
+
+function resetTimersLoop() {
+  if(timersLoopTimeout !== false) clearTimeout(timersLoopTimeout)
   timersLoop()
 }
 
@@ -246,10 +254,14 @@ function runTimerAction(timer) {
 }
 
 function insertTimer(timer) {
+  console.log("INSERT TIMER", timer, "TO", timersQueue)
   timersById.set(timer.id, timer)
-  for(let i = 0; i < timersQueue; i++) {
+  for(let i = 0; i < timersQueue.length; i++) {
     if(timer.timestamp < timersQueue[i].timestamp) {
       timersQueue.splice(i, 0, timer)
+      if(i == 0) { // reset timers loop
+        resetTimersLoop()
+      }
       return;
     }
   }
@@ -257,8 +269,7 @@ function insertTimer(timer) {
   if(!timersLoopStarted) {
     startTimersLoop()
   } else if(timer.timestamp - Date.now() < 1000) {
-    clearTimeout(timersLoopTimeout)
-    startTimersLoop()
+    resetTimersLoop()
   }
 }
 
