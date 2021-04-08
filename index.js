@@ -115,7 +115,7 @@ function fireTimer(timer) {
 }
 
 async function timersLoop() {
-  console.log("TL", timersQueue)
+  console.log("TL", timersQueue.length, timersQueue[0] && (timersQueue[0].timestamp - Date.now()))
   if(timersQueue.length == 0) {
     timersLoopStarted = false
     setTimeout(checkIfThereIsMore, loadMoreAfter)
