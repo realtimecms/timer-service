@@ -65,7 +65,6 @@ const Timer = definition.model({
 })
 
 
-
 function fireTimer(timer) {
   runTimerAction(timer).catch(error => {
     console.error("TIMER ACTION ERROR", error)
