@@ -298,7 +298,8 @@ definition.trigger({
     let interval = timer.interval || 0
     if(loops > 0 && interval == 0) throw new Error("impossibleTimer")
     const props = {
-      ...timer, timestamp, loops, interval, timerId, maxRetries, retryDelay, retries: 0
+      ...timer, timestamp, loops, interval, timerId, maxRetries, retryDelay, retries: 0,
+      time: new Date(timestamp).toISOString()
     }
     emit({
       type: "timerCreated",
@@ -369,7 +370,8 @@ definition.action({
     let interval = timer.interval || 0
     if(loops > 0 && interval == 0) throw new Error("impossibleTimer")
     const props = {
-      ...timer, timestamp, loops, interval, timerId, maxRetries, retryDelay, retries: 0
+      ...timer, timestamp, loops, interval, timerId, maxRetries, retryDelay, retries: 0,
+      time: new Date(timestamp).toISOString()
     }
     emit({
       type: "timerCreated",
